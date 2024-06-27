@@ -21,10 +21,15 @@ public class UserDaoImp implements UserDao {
         List<User> users = em.createQuery("from User").getResultList();
         return users;
     }
-
+    //    EntityManager#remove() works only on entities which are managed
+    //    in the current transaction/context.
+    //    retrieving the entity in an earlier transaction,
+    //    storing it in the HTTP session and then attempting to remove it in
+    //    a different transaction/context.
+    //    This em.remove(user) -  won't work.
     @Override
     public void deleteUser(User user) {
-        em.remove(user);
+        em.remove(em.contains(user) ? user : em.merge(user));
     }
 
     @Override
