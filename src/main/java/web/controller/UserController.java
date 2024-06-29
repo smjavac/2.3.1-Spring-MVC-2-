@@ -1,6 +1,7 @@
 package web.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import javax.validation.Valid;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -8,9 +9,8 @@ import org.springframework.web.bind.annotation.*;
 import web.models.User;
 import web.service.UserService;
 
-import javax.validation.*;
-
 @Controller
+@RequestMapping("/users")
 public class UserController {
     private UserService userService;
 
@@ -22,58 +22,47 @@ public class UserController {
         this.userService = userService;
     }
 
-    @GetMapping("/")
-    public String mainPage() {
-        return "mainPage";
+    @GetMapping
+    public String allUsers(Model model) {
+        model.addAttribute("users", userService.getAllUsers());
+        model.addAttribute("user", new User());
+        return "allUsers";
     }
 
-    @GetMapping("/users")
-    public String printUsers(Model model) {
-        model.addAttribute("usersList", userService.getAllUsers());
-        return "users";
-    }
-
-    @GetMapping("users/")
-    public String getUser(@RequestParam("id") int id, Model model) {
-        model.addAttribute("user", userService.getUser(id));
+    @GetMapping("/id")
+    public String getUserId(@RequestParam("id") int id, Model model) {
+        model.addAttribute("user", userService.getUserById(id));
         return "user";
     }
 
-    @GetMapping("users/new")
-    public String newUser(@ModelAttribute("user") User user) {
-        return "new";
+    @GetMapping("/add")
+    public String addUserForm(Model model) {
+        model.addAttribute("user", new User());
+        return "allUsers";
     }
 
-    @PostMapping("/users")
-    public String create(@ModelAttribute("user") @Valid User user, BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
-            return "new";
+    @PostMapping("/add")
+    public String addUser(@ModelAttribute("user") @Valid User user, BindingResult bindingResult, Model model) {
+        if(bindingResult.hasErrors()) {
+            model.addAttribute("users", userService.getAllUsers());
+            return "allUsers";
         }
-
         userService.addUser(user);
         return "redirect:/users";
     }
 
-    @GetMapping("users/edit/")
-    public String edit(@RequestParam("id") long id, Model model) {
-        model.addAttribute("user", userService.getUser(id));
-        return "edit";
-    }
-
-    @PostMapping("users/")
-
-    public String update(@ModelAttribute("user") @Valid User user, BindingResult bindingResult,
-                         @RequestParam("id") int id) {
-        if (bindingResult.hasErrors()) {
-            return "edit";
+    @PostMapping("/update")
+    public String updateUser(@ModelAttribute("user") @Valid User user, BindingResult bindingResult, @RequestParam("id") long id) {
+        if(bindingResult.hasErrors()) {
+            return "allUsers";
         }
         userService.updateUser(id, user);
         return "redirect:/users";
     }
 
-    @GetMapping("users/delete/")
-    public String delete(@RequestParam("id") long id) {
-        userService.deleteUser(userService.getUser(id));
+    @PostMapping("/delete")
+    public String deleteUser(@RequestParam("id") long id) {
+        userService.removeUser(id);
         return "redirect:/users";
     }
 }

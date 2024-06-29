@@ -65,12 +65,12 @@
         }
         .error-message {
             color: red;
-            margin-top: 10px;
+            font-size: 12px;
         }
     </style>
 </head>
 <body>
-<div th:if="${user != null}">
+<div th:if="${users != null}">
     <h2>Пользователи</h2>
     <table>
         <thead>
@@ -84,14 +84,14 @@
         </tr>
         </thead>
         <tbody>
-        <tr th:each="user : ${user}">
+        <tr th:each="user : ${users}">
             <td th:text="${user.id}"></td>
             <td th:text="${user.name}"></td>
             <td th:text="${user.surname}"></td>
             <td th:text="${user.age}"></td>
             <td th:text="${user.email}"></td>
             <td>
-                <a th:href="@{/users/id(id=${user.id})}">Обновить</a>
+                <a th:href="@{/users/id(id=${user.id})}">Информация</a>
                 <form th:action="@{/users/delete}" method="post" style="display:inline;">
                     <input type="hidden" th:value="${user.id}" name="id"/>
                     <button type="submit">Удалить</button>
@@ -103,24 +103,28 @@
 </div>
 
 <div id="addForm" class="form-container" th:if="${user != null}">
-    <h2>Информация о пользователе</h2>
-    <form th:action="@{/users/update}" th:object="${user}" method="post">
-        <input type="hidden" th:value="${user.id}" name="id"/>
-        <label for="name">Имя:</label>
-        <input type="text" id="name" th:field="*{name}">
-        <span class="error-message" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></span>
-        <label for="surname">Фамилия:</label>
-        <input type="text" id="surname" th:field="*{surname}">
-        <span class="error-message" th:if="${#fields.hasErrors('surname')}" th:errors="*{surname}"></span>
+    <h2>Добавить пользователя</h2>
+    <form th:action="@{/users/add}" th:object="${user}" method="post">
+
         <label for="age">Возраст:</label>
         <input type="number" id="age" th:field="*{age}">
         <span class="error-message" th:if="${#fields.hasErrors('age')}" th:errors="*{age}"></span>
+
+        <label for="name">Имя:</label>
+        <input type="text" id="name" th:field="*{name}">
+        <span class="error-message" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></span>
+
         <label for="email">Почта:</label>
         <input type="text" id="email" th:field="*{email}">
         <span class="error-message" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></span>
-        <button type="submit">Обновить пользователя</button>
+
+        <label for="surname">Фамилия</label>
+        <input type="text" id="surname" th:field="*{surname}">
+        <span class="error-message" th:if="${#fields.hasErrors('surname')}" th:errors="*{surname}"></span>
+
+        <button type="submit">Добавить</button>
     </form>
-    <a href="/users">Назад к списку пользователей</a>
 </div>
+
 </body>
 </html>

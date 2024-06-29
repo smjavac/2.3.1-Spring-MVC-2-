@@ -3,23 +3,49 @@ package web.models;
 
 
 import javax.persistence.*;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.Size;
+import javax.validation.constraints.*;
+
 
 @Entity
 @Table(name = "users")
 public class User {
+    public User() {
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
+    //@Column(name = "id")
     private long id;
 
-    public User(long id, String name, String lastName) {
+
+    public User(long id, String name, String surname, String email, int age) {
         this.id = id;
         this.name = name;
-        this.lastName = lastName;
+        this.surname = surname;
+        this.email = email;
+        this.age = age;
     }
+
+
+    @Column(name = "name")
+    @NotEmpty(message = "Name can't be empty")
+    @Pattern(regexp = "^[\\p{L}]+(?: [\\p{L}]+)*$", message = "Имя может содержать только буквы")
+    @Size(min = 2, max = 20, message = "Имя в пределах от 2 до 20 знаков")
+    private String name;
+
+    @Column(name = "surname")
+    @NotEmpty(message = "lastname can't be empty")
+    @Pattern(regexp = "^[\\p{L}]+(?: [\\p{L}]+)*$", message = "Фамилия может содержать только буквы")
+    @Size(min = 2, max = 20, message = "Фамилия в пределах от 2 до 20 знаков")
+    private String surname;
+    @Column(name = "email")
+    @NotEmpty(message = "Почта не может быть пустой")
+    @Email(message = "Почта должна быть валидная")
+    private String email;
+    @Column(name = "age")
+    @Min(value = 1, message = "Возраст должен быть больше 0")
+    private int age;
+
 
     public long getId() {
         return id;
@@ -27,16 +53,6 @@ public class User {
 
     public void setId(long id) {
         this.id = id;
-    }
-    @Column(name = "first_name")
-    @NotEmpty(message = "Name can't be empty")
-    private String name;
-
-    @Column(name = "last_name")
-    @NotEmpty(message = "lastname can't be empty")
-    private String lastName;
-
-    public User() {
     }
 
     public String getName() {
@@ -47,15 +63,32 @@ public class User {
         this.name = name;
     }
 
-    public String getLastName() {
-        return lastName;
+    public String getSurname() {
+        return surname;
     }
 
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
+    public void setSurname(String lastName) {
+        this.surname = lastName;
     }
+
+    public int getAge() {
+        return age;
+    }
+
+    public void setAge(int age) {
+        this.age = age;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
     @Override
     public String toString() {
-        return String.format("firstname = %s  lastname = %s", name, lastName);
+        return String.format("firstname = %s  lastname = %s age = %d email = %s", name, surname, age ,email);
     }
 }

@@ -2,6 +2,8 @@ package web.dao;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.TypedQuery;
+
 import org.springframework.stereotype.Repository;
 import web.models.User;
 import java.util.List;
@@ -18,28 +20,24 @@ public class UserDaoImp implements UserDao {
 
     @Override
     public List<User> getAllUsers() {
-        List<User> users = em.createQuery("from User").getResultList();
-        return users;
-    }
-    //    EntityManager#remove() works only on entities which are managed
-    //    in the current transaction/context.
-    //    retrieving the entity in an earlier transaction,
-    //    storing it in the HTTP session and then attempting to remove it in
-    //    a different transaction/context.
-    //    This em.remove(user) -  won't work.
-    @Override
-    public void deleteUser(User user) {
-        em.remove(em.contains(user) ? user : em.merge(user));
+        String getAllQuery = "select u from User u";
+        TypedQuery<User> query = em.createQuery(getAllQuery, User.class);
+        return query.getResultList();
     }
 
     @Override
-    public User getUser(long userid) {
+    public User getUserById(long userid) {
         return em.find(User.class, userid);
     }
 
     @Override
-    public void updateUser(int id, User updateUser) {
+    public void updateUser(long id, User updateUser) {
         em.merge(updateUser);
 
+    }
+
+    @Override
+    public void removeUser(long id) {
+        em.remove(getUserById(id));
     }
 }
